@@ -1,0 +1,148 @@
+================================================================
+Milestone 3 - Conceptual Problems
+
+Nama  : Farhan Hamid Lubis
+Batch : FTDS-052-RMT
+
+File ini berisi jawaban dari 6 pertanyaan konseptual mengenai
+NoSQL, Airflow, Great Expectations, dan Batch Processing.
+
+----------------------------------------------------------------
+
+1. Jelaskan apa yang dimaksud dengan NoSQL menggunakan pemahaman yang kalian ketahui!
+
+NoSQL (Not Only SQL) adalah jenis sistem manajemen basis data yang tidak menggunakan model relasional seperti tabel dengan baris dan kolom sebagaimana yang kita kenal pada RDBMS tradisional seperti PostgreSQL atau MySQL. NoSQL dirancang untuk menangani data dalam skala besar, data yang tidak terstruktur atau semi-terstruktur, serta kebutuhan performa tinggi yang sulit dipenuhi oleh database relasional.
+
+Perbedaan utama NoSQL dengan SQL terletak pada skema datanya. Pada SQL, struktur data harus didefinisikan secara rigid terlebih dahulu (schema-on-write), sedangkan pada NoSQL skema bersifat fleksibel (schema-on-read), artinya setiap dokumen atau record bisa memiliki struktur yang berbeda-beda.
+
+Terdapat beberapa bentuk NoSQL, antara lain:
+- Document Store   : menyimpan data dalam format dokumen (contoh: MongoDB, Elasticsearch)
+- Key-Value Store  : menyimpan data sebagai pasangan kunci-nilai (contoh: Redis)
+- Column-Family    : menyimpan data dalam kolom yang dikelompokkan (contoh: Apache Cassandra)
+- Graph Database   : menyimpan data dalam bentuk node dan relasi (contoh: Neo4j)
+
+Singkatnya, NoSQL adalah solusi database modern yang mengutamakan skalabilitas horizontal, kecepatan baca/tulis, dan fleksibilitas struktur data dibandingkan konsistensi data yang ketat.
+
+----------------------------------------------------------------
+
+2. Jelaskan kapan harus menggunakan NoSQL dan Relational Database Management System!
+
+Gunakan NoSQL ketika:
+- Data yang dimiliki tidak memiliki struktur yang tetap (semi-structured atau unstructured), misalnya data log aplikasi, data JSON dari API, atau data media sosial.
+- Volume data sangat besar (Big Data) dan terus bertambah dengan cepat sehingga membutuhkan kemampuan scaling horizontal (menambah server) dengan mudah.
+- Sistem membutuhkan kecepatan baca/tulis yang sangat tinggi (high throughput), misalnya pada aplikasi real-time seperti feed media sosial atau sistem rekomendasi.
+- Struktur data sering berubah seiring waktu sehingga tidak cocok jika harus mengubah skema database setiap saat. Contoh use case: Elasticsearch untuk pencarian log, MongoDB untuk menyimpan profil pengguna dengan atribut yang beragam.
+
+Gunakan RDBMS (Relational Database) ketika:
+- Data memiliki relasi yang kompleks antar entitas dan membutuhkan operasi JOIN yang intensif, misalnya data transaksi keuangan.
+- Konsistensi data adalah prioritas utama misalnay data yang bersifat ACID (Atomicity, Consistency, Isolation, Durability) seperti pada sistem perbankan  atau e-commerce yang tidak boleh ada data ganda atau data yang hilang di tengah transaksi.
+- Struktur data sudah jelas dan tidak sering berubah.
+- Sistem membutuhkan kemampuan query yang kompleks menggunakan SQL. Contoh use case: PostgreSQL untuk menyimpan data transaksi penjualan, MySQL untuk sistem manajemen inventori.
+
+Kesimpulan: 
+- NoSQL = skalabilitas & fleksibilitas 
+- RDBMS = konsistensi & integritas data.
+
+----------------------------------------------------------------
+
+3. Sebutkan contoh 2 tools/platform NoSQL selain ElasticSearch beserta keunggulan tools/platform tersebut!
+
+- MongoDB
+  MongoDB adalah database NoSQL berbasis dokumen yang menyimpan data dalam format BSON (Binary JSON). Berikut adalah keunggulannya:
+  - Skema yang sangat fleksibel: 
+    Setiap dokumen dalam koleksi yang sama bisa memiliki field yang berbeda, sehingga sangat cocok untuk data yang strukturnya sering berubah.
+  - Query yang powerful: 
+    MongoDB mendukung query yang kaya seperti aggregation pipeline, geospatial query, dan full-text search tanpa harus bergantung pada JOIN seperti di SQL.
+  - Horizontal scaling dengan Sharding: 
+    MongoDB bisa mendistribusikan data ke banyak server secara otomatis, sehingga mampu menangani dataset yang sangat besar.
+  - Ekosistem yang matang: 
+    Memiliki driver resmi untuk hampir semua bahasa pemrograman populer dan dokumentasi yang sangat lengkap.
+
+- Apache Cassandra
+  Apache Cassandra adalah database NoSQL berbasis column-family yang awalnya dikembangkan oleh Facebook. Berikut adalah keunggulannya:
+  - Highly Available & Fault Tolerant: 
+    Cassandra dirancang tanpa single point of failure. Data direplikasi ke beberapa node secara otomatis sehingga sistem tetap berjalan meski ada node yang mati.
+  - Performa tulis yang sangat tinggi: 
+    Cassandra unggul dalam operasi write-heavy workload, sangat cocok untuk aplikasi seperti IoT sensor data, time-series data, atau log sistem yang terus-menerus menulis data baru.
+  - Linear scalability: 
+    Penambahan node baru secara langsung meningkatkan kapasitas dan throughput secara proporsional.
+  - Multi-datacenter replication: 
+    Mendukung replikasi data antar datacenter yang berbeda lokasi geografis, ideal untuk aplikasi global dengan kebutuhan disaster recovery.
+
+----------------------------------------------------------------
+
+4. Jelaskan apa yang Anda ketahui dari Airflow menggunakan pemahaman dan bahasa Anda sendiri!
+
+Apache Airflow adalah platform open-source untuk membuat, menjadwalkan, dan memonitor alur kerja (workflow) secara otomatis. Dalam konteks Data Engineering, Airflow sangat populer digunakan untuk mengotomasi pipeline data (ETL: Extract, Transform, Load).
+
+Konsep utama dalam Airflow:
+- DAG (Directed Acyclic Graph): 
+  Ini adalah unit utama dalam Airflow. DAG merepresentasikan sebuah workflow yang terdiri dari beberapa task yang saling terhubung dengan urutan tertentu. "Directed" berarti task punya arah eksekusi (A harus selesai sebelum B dijalankan), dan "Acyclic" berarti tidak ada perulangan sehingga tidak terjadi infinite loop.
+- Task/Operator: 
+  Setiap langkah dalam DAG disebut task. Airflow menyediakan berbagai jenis Operator seperti PythonOperator (menjalankan fungsi Python), BashOperator (menjalankan perintah bash), dan masih banyak lagi.
+- Scheduler: 
+  Komponen yang bertanggung jawab untuk menjalankan DAG sesuai jadwal yang telah ditentukan menggunakan ekspresi cron.
+- Web UI: 
+  Airflow memiliki antarmuka web yang intuitif untuk memonitor status DAG, melihat log eksekusi setiap task, dan mengelola workflow secara visual.
+
+Singkatnya, Airflow memudahkan kita untuk mengotomasi pekerjaan data yang berulang tanpa harus menjalankannya secara manual setiap saat.
+
+----------------------------------------------------------------
+
+5. Jelaskan apa yang Anda ketahui dari Great Expectations menggunakan pemahaman dan bahasa Anda sendiri!
+
+Great Expectations (GX) adalah library Python open-source yang digunakan untuk melakukan validasi, dokumentasi, dan profiling data secara otomatis. Dalam dunia Data Engineering dan Data Science, Great Expectations berperan sebagai "unit test untuk data".
+
+Konsep utama dalam Great Expectations:
+- Expectation: 
+  Ini adalah aturan atau asumsi yang kita definisikan terhadap data kita. Contohnya: "kolom age tidak boleh null", "kolom status hanya boleh berisi nilai 'active' atau 'inactive'", atau "kolom amount harus bernilai antara 0 dan 1.000.000".
+- Expectation Suite: 
+  Kumpulan dari beberapa Expectation yang dikelompokkan untuk satu dataset atau satu tahap pipeline.
+- Validator: 
+  Objek yang digunakan untuk menjalankan Expectation terhadap data aktual dan mengembalikan hasil (success: true/false).
+- Data Docs: 
+  Great Expectations bisa secara otomatis menghasilkan dokumentasi dalam format HTML yang menampilkan hasil validasi secara visual dan mudah dipahami oleh semua pihak.
+- Checkpoint: 
+  Cara untuk menjalankan validasi secara otomatis sebagai bagian dari pipeline data.
+
+Mengapa Great Expectations penting? 
+Karena data yang masuk ke dalam pipeline bisa saja berubah format atau mengandung error tanpa kita sadari. GX memastikan bahwa data yang diproses selalu sesuai dengan standar yang telah kita tentukan sejak awal.
+
+----------------------------------------------------------------
+
+6. Jelaskan apa yang Anda ketahui dari Batch Processing menggunakan pemahaman dan bahasa Anda sendiri (Definisi, Contoh Kasus Penggunaan, Tools, dll)!
+
+Definisi:
+Batch Processing adalah metode pengolahan data di mana sekumpulan data dikumpulkan terlebih dahulu dalam periode waktu tertentu, kemudian diproses sekaligus dalam satu waktu (batch/kumpulan) tanpa intervensi manual. Berbeda dengan Stream Processing yang memproses data secara real-time satu per satu begitu data masuk, Batch Processing menunggu data terkumpul dulu baru kemudian dieksekusi.
+
+Karakteristik utama Batch Processing:
+- Data diproses secara periodik (per jam, per hari, per minggu, dll)
+- Volume data yang diproses biasanya besar
+- Tidak membutuhkan respons secara real-time
+- Lebih efisien dalam penggunaan resource komputasi untuk data bervolume besar
+
+Contoh Kasus Penggunaan:
+- Laporan keuangan bulanan: 
+  Perusahaan mengumpulkan semua data transaksi selama sebulan, lalu memprosesnya sekaligus di akhir bulan untuk menghasilkan laporan keuangan.
+- Pemrosesan gaji karyawan (payroll): 
+  Data absensi dan lembur dikumpulkan selama sebulan, kemudian diproses sekaligus saat akhir bulan untuk menghitung dan mentransfer gaji.
+- Rekomendasi produk e-commerce: 
+  Data interaksi pengguna (klik, pembelian) dikumpulkan harian, kemudian diproses setiap malam untuk memperbarui model rekomendasi.
+- ETL pipeline data warehouse: 
+  Data dari berbagai sistem operasional dikumpulkan dan dimuat ke data warehouse setiap malam (nightly batch).
+
+Tools yang umum digunakan untuk Batch Processing:
+- Apache Airflow        : untuk scheduling dan orkestrasi pipeline batch
+- Apache Spark          : untuk memproses data batch dalam skala besar secara terdistribusi
+- Apache Hadoop         : framework batch processing klasik berbasis MapReduce
+- AWS Glue              : layanan ETL batch berbasis cloud dari Amazon
+- dbt (data build tool) : untuk transformasi data batch di dalam data warehouse
+
+Perbedaan dengan Stream Processing:
+| Aspek         | Batch Processing        | Stream Processing             |
+|---------------|-------------------------|-------------------------------|
+| Waktu proses  | Periodik (delay)        | Real-time (instan)            |
+| Volume data   | Besar (bulk)            | Kecil per event               |
+| Kompleksitas  | Lebih sederhana         | Lebih kompleks                |
+| Contoh tools  | Airflow, Spark, Hadoop  | Kafka, Flink, Spark Streaming |
+| Use case      | Laporan bulanan, ETL    | Deteksi fraud, monitoring     |

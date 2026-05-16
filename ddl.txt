@@ -1,0 +1,94 @@
+================================================================
+Milestone 3 - DDL File
+
+Nama  : Farhan Hamid Lubis
+Batch : FTDS-052-RMT
+
+File ini berisi URL dataset, sintaks DDL pembuatan tabel,
+dan sintaks DML untuk insert data ke PostgreSQL.
+
+----------------------------------------------------------------
+
+1. URL DATASET
+
+https://www.kaggle.com/datasets/thedevastator/unlock-profits-with-e-commerce-sales-data
+
+Deskripsi Dataset:
+Dataset ini berisi data transaksi penjualan dari sebuah platform e-commerce yang mencakup informasi order, produk, status pengiriman, channel penjualan, serta lokasi pelanggan. Dataset ini digunakan untuk menganalisis performa penjualan guna mendukung pengambilan keputusan oleh tim Sales & Marketing.
+
+----------------------------------------------------------------
+
+2. SYNTAX DDL - CREATE TABLE
+
+Tipe data dalam tabel ini diatur menggunakan tipe data TEXT agar tidak terjadi kesalahan dalam proses insert data ke dalam database. Tipe data ini nantinya akan diproses lebih lanjut di dalam DAG Airflow.
+
+DROP TABLE IF EXISTS table_m3;
+
+CREATE TABLE IF NOT EXISTS table_m3 (
+    "index"              INTEGER PRIMARY KEY,
+    "Order ID"           TEXT,
+    "Date"               TEXT,
+    "Status"             TEXT,
+    "Fulfilment"         TEXT,
+    "Sales Channel "     TEXT,
+    "ship-service-level" TEXT,
+    "Style"              TEXT,
+    "SKU"                TEXT,
+    "Category"           TEXT,
+    "Size"               TEXT,
+    "ASIN"               TEXT,
+    "Courier Status"     TEXT,
+    "Qty"                TEXT,
+    "currency"           TEXT,
+    "Amount"             TEXT,
+    "ship-city"          TEXT,
+    "ship-state"         TEXT,
+    "ship-postal-code"   TEXT,
+    "ship-country"       TEXT,
+    "promotion-ids"      TEXT,
+    "B2B"                TEXT,
+    "fulfilled-by"       TEXT,
+    "Unnamed: 22"        TEXT
+);
+
+----------------------------------------------------------------
+
+3. SYNTAX DML - INSERT DATA (menggunakan Python + psycopg2)
+
+import pandas as pd
+import psycopg2
+from psycopg2.extras import execute_values
+
+# Koneksi ke PostgreSQL
+db_user     = "airflow"
+db_password = "airflow"
+db_host     = "localhost"
+db_port     = "5434"
+db_name     = "airflow"
+
+connection = psycopg2.connect(
+    user=db_user,
+    password=db_password,
+    host=db_host,
+    port=db_port,
+    database=db_name
+)
+cursor = connection.cursor()
+
+# Load dataset
+df = pd.read_csv('P2M3_farhan_hl_data_raw.csv', low_memory=False)
+
+# Insert data ke table_m3
+cols         = ",".join([f'"{col}"' for col in df.columns])
+values       = [tuple(row) for row in df.itertuples(index=False, name=None)]
+insert_query = f"INSERT INTO table_m3 ({cols}) VALUES %s"
+
+cursor.execute("TRUNCATE TABLE table_m3")
+execute_values(cursor, insert_query, values)
+connection.commit()
+
+# Close connection
+cursor.close()
+connection.close()
+
+print(f"Data berhasil dimasukkan ke PostgreSQL: {len(values)} rows.")
